@@ -232,9 +232,17 @@ def normalize_quotes(s: str) -> str:
     })
     return s.translate(table)
 
-
+model_dir = os.path.join(os.path.dirname(__file__), 'easyocr_models')
 print("🔄 Inițializare EasyOCR...")
-reader = easyocr.Reader(['ro', 'en'], gpu=False)
+reader = easyocr.Reader(
+    ['ro'],
+    gpu=False,
+    download_enabled=False,
+    model_storage_directory=model_dir,
+    detector=True,
+    recognizer=True,
+    verbose=False
+)
 print("✅ EasyOCR gata!\n")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
