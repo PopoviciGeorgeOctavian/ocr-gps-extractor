@@ -234,7 +234,15 @@ def normalize_quotes(s: str) -> str:
 
 
 print("🔄 Inițializare EasyOCR...")
-reader = easyocr.Reader(['ro', 'en'], gpu=False)
+reader = easyocr.Reader(
+    ['ro'],  # DOAR română
+    gpu=False,
+    download_enabled=False,
+    model_storage_directory='/tmp/.EasyOCR',
+    detector=True, 
+    recognizer=True,
+    verbose=False  # Redu log-urile
+)
 print("✅ EasyOCR gata!\n")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
