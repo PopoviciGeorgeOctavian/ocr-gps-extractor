@@ -232,17 +232,40 @@ def normalize_quotes(s: str) -> str:
     })
     return s.translate(table)
 
-model_dir = os.path.join(os.path.dirname(__file__), 'easyocr_models')
 print("🔄 Inițializare EasyOCR...")
+
+# Pe Render, folosește /tmp care e persistent între deploy-uri
+model_dir = '/tmp/.EasyOCR'
+
+# Verifică dacă modelele există deja
+def models_exist():
+    required = ['craft_mlt_25k.pth', 'latin.pth']
+    for model in required:
+        if not os.path.exists(os.path.join(model_dir, model)):
+            return False
+    return True
+
+# Creează folderul dacă nu există
+os.makedirs(model_dir, exist_ok=True)
+
+# Download doar dacă modelele lipsesc
+should_download = not models_exist()
+
+if should_download:
+    print("📥 Descărcare modele EasyOCR (prima dată, ~80MB)...")
+else:
+    print("✅ Folosesc modelele existente...")
+
 reader = easyocr.Reader(
-    ['ro'],
+    ['ro'],  # DOAR română pentru economie de memorie
     gpu=False,
-    download_enabled=False,
+    download_enabled=should_download,
     model_storage_directory=model_dir,
     detector=True,
     recognizer=True,
     verbose=False
 )
+
 print("✅ EasyOCR gata!\n")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
